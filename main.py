@@ -12,8 +12,9 @@ from utils.messageEncoder import translateMessage
 from utils.mongo.mongo_client import MongoConfig
 from utils.properties import DB_name
 from utils.properties import FILE_SUFFIXS
-
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
 
 UPLOAD_FOLDER = os.getcwd() + "/images/"
 ALLOWED_EXTENSIONS = FILE_SUFFIXS
@@ -21,7 +22,7 @@ ALLOWED_EXTENSIONS = FILE_SUFFIXS
 Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-app = Flask(__name__)
+
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 
@@ -175,13 +176,6 @@ def handle_send_message_event(data):
             chat = get_chatroom_chats(room_id)
             if chat is None:
                 chat = MongoConfig().find(DB_name, room_id, {"chatroomId": room_id})
-
-                # todo remove when testing is done
-                chat = {"chatroomId": room_id,
-                        "doctorId": 12324,
-                        "clientId": 123,
-                        "createdAt": 1630748882714,
-                        "messages": []}
             if chat is not None:
                 timestamp = time.time() * 1000
                 temp_data = {"sender": sender,
