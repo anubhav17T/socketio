@@ -1,11 +1,10 @@
 import os
 import time
 from pathlib import Path
-
+from flask_cors import CORS
 from flask import Flask, request, flash, render_template, url_for
 from flask_socketio import SocketIO, join_room, leave_room
 from werkzeug.utils import redirect, secure_filename
-
 from utils.cache import update_chatroom_chats, get_chatroom_chats
 from utils.common import translate_message_for_mongo, upload_to_s3, return_response, allowed_file
 from utils.messageEncoder import translateMessage
@@ -14,6 +13,7 @@ from utils.properties import DB_name
 from utils.properties import FILE_SUFFIXS
 
 app = Flask(__name__)
+CORS(app)
 
 UPLOAD_FOLDER = os.getcwd() + "/images/"
 ALLOWED_EXTENSIONS = FILE_SUFFIXS
@@ -21,7 +21,6 @@ ALLOWED_EXTENSIONS = FILE_SUFFIXS
 Path(UPLOAD_FOLDER).mkdir(parents=True, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-app = Flask(__name__)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 
@@ -177,11 +176,11 @@ def handle_send_message_event(data):
                 chat = MongoConfig().find(DB_name, room_id, {"chatroomId": room_id})
 
                 # todo remove when testing is done
-                chat = {"chatroomId": room_id,
-                        "doctorId": 12324,
-                        "clientId": 123,
-                        "createdAt": 1630748882714,
-                        "messages": []}
+#                 chat = {"chatroomId": room_id,
+#                         "doctorId": 12324,
+#                         "clientId": 123,
+#                         "createdAt": 1630748882714,
+#                         "messages": []}
             if chat is not None:
                 timestamp = time.time() * 1000
                 temp_data = {"sender": sender,
