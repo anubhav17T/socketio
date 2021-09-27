@@ -59,8 +59,7 @@ def chat():
 @app.route("/get_config", methods=["GET"])
 def get_config():
     import os
-    logger.info("##### CONFIG IS {}".format(os.environ["mongodb.server.url"]))
-
+    return return_response({"data":os.environ["mongodb.server.url"]})
 
 
 @app.route('/create_chatroom', methods=['POST'])
