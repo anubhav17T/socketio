@@ -164,7 +164,7 @@ def get_chats():
         else:
             data = list(MongoConfig().find_all(DB_name, COLLECTION_NAME, {"clientID": user_name},
                                                projection={"_id": 0, "messages": 0}))
-        return return_response(data, "Success", 200)
+        return return_response(data)
     except Exception as e:
         return return_response({"error": str(e)}, str(e), 400)
 
