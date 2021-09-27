@@ -1,10 +1,7 @@
-from asyncio.log import logger
-
-from pymongo import MongoClient, WriteConcern
-from pymongo import ReadPreference
 import re
 import time
-
+from asyncio.log import logger
+from pymongo import MongoClient, WriteConcern
 from utils.properties import keysInformation
 
 
@@ -19,7 +16,6 @@ class MongoConfig:
         else:
             if not hasattr(cls, 'instance'):
                 cls.instance = super(MongoConfig, cls).__new__(cls)
-                MongoClient('mongodb://' + 'localhost:27017')
                 # MongoClient(keysInformation["mongodb.server.url"])
                 cls.instance.client = MongoClient('mongodb://' + 'localhost:27017')
             return cls.instance

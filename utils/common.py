@@ -1,5 +1,4 @@
-from flask import jsonify
-
+import json
 import cloudinary
 from cloudinary import uploader
 
@@ -34,11 +33,20 @@ def upload_to_s3(key, data, complete_file=False):
 def return_response(data=None, message="", code=200):
     if data is None:
         data = {}
-    return jsonify({"data": {"data": data, "message": message, "code": code}, "status": code, "safe": False})
+    return json.dumps({"data": data, "message": message, "code": code, "status": code, "safe": False})
 
 
 def translate_message_for_mongo(userId, message):
     return translateMessage(userId, message, 'encrypt')
+
+
+def error_message(error, target, message, code=500):
+    return {"status_code": code,
+            "content": {"error": {"message": message,
+                                  "code": code,
+                                  "success": False,
+                                  "error": error,
+                                  "target": target}}}
 
 
 def allowed_file(filename):

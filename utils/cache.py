@@ -1,3 +1,6 @@
+from utils.mongo.mongo_client import MongoConfig
+from utils.properties import DB_name, COLLECTION_NAME
+
 cache_maintainer = {}
 
 
@@ -27,4 +30,11 @@ def update_chatroom_chats(chatroom_id, data):
 
 
 def get_chatroom_chats(chatroom_id):
+
+    data = chatroom_messages.get(chatroom_id)
+    if data is None:
+        data = MongoConfig().find(DB_name, COLLECTION_NAME, {"chatroomId": chatroom_id}, projection={"_id": 0})
+        if data is not None:
+            data["decrypted"] = False
+            update_chatroom_chats(chatroom_id, data)
     return chatroom_messages.get(chatroom_id)
