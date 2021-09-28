@@ -11,7 +11,6 @@ def get_previous_chat(count, room_id, user_name):
             temp_message = i.get("message")
             i["message"] = translateMessage(room_id, temp_message, 'decrypt')
         messages["decrypted"] = True
-        update_chatroom_chats(room_id, messages)
     final_message = []
     if messages is not None:
         for i in messages.get("messages")[-50 * count:]:
