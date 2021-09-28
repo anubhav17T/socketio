@@ -174,7 +174,7 @@ def get_chats():
                                                                                   "message"), 'decrypt')
                 current_chat["messages"] = current_chat.get("messages")[0]
 
-        return return_response(list_of_chats)
+        return return_response(list_of_chats,message="Please find recent chats")
     except Exception as e:
         return return_response({"error": str(e)}, str(e), 400)
 

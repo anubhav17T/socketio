@@ -33,7 +33,7 @@ def upload_to_s3(key, data, complete_file=False):
 def return_response(data=None, message="", code=200):
     if data is None:
         data = {}
-    return json.dumps({"data": data, "message": message, "code": code, "status": code, "safe": False})
+    return json.dumps({"data": data, "message": message, "status": code, "success": True})
 
 
 def translate_message_for_mongo(userId, message):
