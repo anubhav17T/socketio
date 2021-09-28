@@ -68,7 +68,7 @@ def get_config():
 def create_chatroom():
     if request.method == "POST":
         try:
-            content = json.loads(request.data.decode("utf-8"))
+            content = request.json
             doctor: str = content.get("doctorId")
             if doctor is None:
                 return return_response({}, "doctor id is none", 400)
