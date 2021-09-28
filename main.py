@@ -10,6 +10,7 @@ from werkzeug.utils import redirect, secure_filename
 from prevous_chat import get_previous_chat
 from utils.cache import update_chatroom_chats, get_chatroom_chats
 from utils.common import translate_message_for_mongo, upload_to_s3, return_response, allowed_file, error_message
+from utils.messageEncoder import translateMessage
 from utils.mongo.mongo_client import MongoConfig
 from utils.mqtt import send_response, run_mqtt
 from utils.properties import DB_name, COLLECTION_NAME
@@ -59,7 +60,7 @@ def chat():
 @app.route("/get_config", methods=["GET"])
 def get_config():
     import os
-    return return_response({"data":os.environ["mongodb.server.url"]})
+    return return_response({"data": os.environ["mongodb.server.url"]})
 
 
 @app.route('/create_chatroom', methods=['POST'])
@@ -144,9 +145,11 @@ def update_chat():
 @app.route('/getChat', methods=['GET'])
 def get_chat():
     try:
-        room_id = request.args.get("chatroomId")
-        user_name = request.args.get("username")
+        # todo use skip and limit for get data
+        room_id = request.args.get("roomId")
+        user_name = request.args.get("id")
         count: int = request.args.get("count")
+        logger.info(f"Get chat details for {room_id}, {user_name}, {count}")
         data = get_previous_chat(count, room_id, user_name)
         return return_response(data, "Success", 200)
     except Exception as e:
@@ -159,12 +162,19 @@ def get_chats():
         user_type = request.args.get("type")
         user_name = request.args.get("id")
         if user_type == "doctor":
-            data = list(MongoConfig().find_all(DB_name, COLLECTION_NAME, {"doctorId": user_name},
-                                               projection={"_id": 0, "messages": 0}))
+            to_search = {"doctorId": user_name}
         else:
-            data = list(MongoConfig().find_all(DB_name, COLLECTION_NAME, {"clientID": user_name},
-                                               projection={"_id": 0, "messages": 0}))
-        return return_response(data)
+            to_search = {"clientID": user_name}
+        list_of_chats = list(MongoConfig().find_all(DB_name, COLLECTION_NAME, to_search,
+                                                    projection={"_id": 0, "history": 0, "messages": {"$slice": -1}}))
+        for current_chat in list_of_chats:
+            if len(current_chat.get("messages")) > 0:
+                current_chat.get("messages")[0]["message"] = translateMessage(current_chat.get("chatroomId"),
+                                                                              current_chat.get("messages")[0].get(
+                                                                                  "message"), 'decrypt')
+                current_chat["messages"] = current_chat.get("messages")[0]
+
+        return return_response(list_of_chats)
     except Exception as e:
         return return_response({"error": str(e)}, str(e), 400)
 
