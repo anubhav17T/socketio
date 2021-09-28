@@ -1,4 +1,5 @@
 import datetime
+import json
 import os
 import time
 from asyncio.log import logger
@@ -67,10 +68,11 @@ def get_config():
 def create_chatroom():
     if request.method == "POST":
         try:
-            doctor: str = request.form.get("doctorId")
+            content = json.loads(request.data.decode("utf-8"))
+            doctor: str = content.get("doctorId")
             if doctor is None:
                 return return_response({}, "doctor id is none", 400)
-            client: str = request.form.get("clientId")
+            client: str = content.get("clientId")
             if client is None:
                 return return_response({}, "client id is none", 400)
             room_id = f"{doctor}_{client}"
