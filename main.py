@@ -78,7 +78,7 @@ def create_chatroom():
                 return return_response({}, "client id is none", 400)
             room_id = f"{doctor}_{client}"
             if get_chatroom_chats(room_id) is not None:
-                return return_response({}, "room already exist", 200)
+                return return_response({"chatroomId":room_id}, "room already exist", 200)
             else:
                 to_save = {"chatroomId": room_id,
                            "doctorId": doctor,
