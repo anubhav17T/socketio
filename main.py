@@ -69,6 +69,7 @@ def create_chatroom():
     if request.method == "POST":
         try:
             content = request.json
+            logger.info("###### CONTENT {}".format(content))
             doctor: str = content.get("doctorId")
             if doctor is None:
                 return return_response({}, "doctor id is none", 400)
@@ -221,7 +222,7 @@ def handle_send_message_event(data):
 
 @socketio.on('join_room')
 def handle_join_room_event(data):
-    app.logger.info("{} has joined the room {}".format(data['username'], data['room'], data['accountType']))
+    app.logger.info("{} has joined the room {} {}".format(data['username'], data['room'], data['accountType']))
     try:
         to_search = {"chatroomId": data.get("room")}
         if data['accountType'] == "doctor":
